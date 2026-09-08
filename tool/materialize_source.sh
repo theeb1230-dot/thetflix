@@ -57,7 +57,7 @@ tv = root / "android/tvapp/build.gradle.kts"
 if tv.exists():
     t = tv.read_text()
     t = t.replace('applicationId = "com.theebstream.tv"', 'applicationId = "com.thetflix.tv"')
-    t = t.replace('versionCode = 25', 'versionCode = 1')
+    t = t.replace('versionCode = 15', 'versionCode = 2')
     t = t.replace('versionName = "2.0.1"', 'versionName = "0.1.1"')
     tv.write_text(t)
 PY
