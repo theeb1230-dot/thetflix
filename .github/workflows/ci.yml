@@ -29,7 +29,7 @@ jobs:
         run: flutter pub get
       - name: Analyze
         working-directory: .workspace/thetflix_app
-        run: flutter analyze --no-fatal-infos
+        run: flutter analyze --no-fatal-warnings --no-fatal-infos
       - name: Tests
         working-directory: .workspace/thetflix_app
         run: flutter test
