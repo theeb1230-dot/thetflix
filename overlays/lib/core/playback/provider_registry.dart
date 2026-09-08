@@ -103,5 +103,19 @@ const pomfyProvider = PlaybackProvider(
   rank: 10,
 );
 
+/// Second provider migrated from the Theeb Arab source catalog.
+///
+/// The endpoint shape is taken from the preserved Theeb Arab source rather
+/// than guessed at runtime. Keeping it as a separate candidate allows health
+/// state and fallback order to evolve without replacing Pomfy destructively.
+const videasyProvider = PlaybackProvider(
+  id: 'videasy',
+  displayName: 'Videasy',
+  movieTemplate: 'https://player.videasy.net/movie/{id}?color=00F2FE',
+  seriesTemplate: 'https://player.videasy.net/tv/{id}/{s}/{e}?color=00F2FE',
+  transport: PlaybackTransport.embed,
+  rank: 20,
+);
+
 PlaybackProviderRegistry createDefaultProviderRegistry() =>
-    PlaybackProviderRegistry([pomfyProvider]);
+    PlaybackProviderRegistry([pomfyProvider, videasyProvider]);
