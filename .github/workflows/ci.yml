@@ -24,6 +24,10 @@ jobs:
           cache: true
       - name: Materialize source
         run: bash tool/materialize_source.sh
+      - name: Audit next Theeb Arab provider
+        run: |
+          echo '--- videasy/pomfy references ---'
+          grep -RniE 'videasy|pomfy' .workspace/sources/theeb_arab | head -n 120 || true
       - name: Dependencies
         working-directory: .workspace/thetflix_app
         run: flutter pub get
