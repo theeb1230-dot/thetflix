@@ -1,0 +1,40 @@
+name: thetflix release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Release version, e.g. 0.1.0
+        required: true
+        default: 0.1.0
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    uses: ./.github/workflows/ci.yml
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: thetflix-*
+          merge-multiple: true
+          path: release
+      - name: Verify requested platform assets
+        run: |
+          test -f release/thetflix-android-mobile.apk
+          test -f release/thetflix-android-tv.apk
+          test -f release/thetflix-ios-unsigned.ipa
+          sha256sum release/* > release/SHA256SUMS.txt
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          tag="v$VERSION"
+          gh release create "$tag" --target main --title "thetflix $tag"             --notes "Unified thetflix integration build. iOS IPA is unsigned/no-codesign."             release/thetflix-android-mobile.apk             release/thetflix-android-tv.apk             release/thetflix-ios-unsigned.ipa             release/SHA256SUMS.txt
