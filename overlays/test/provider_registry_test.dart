@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:thetflix/core/playback/provider_registry.dart';
+import 'package:theeb_stream/core/playback/provider_registry.dart';
 
 void main() {
   test('Pomfy builds movie URL', () {
