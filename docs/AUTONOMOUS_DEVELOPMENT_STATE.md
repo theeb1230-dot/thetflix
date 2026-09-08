@@ -74,3 +74,27 @@ A release is not considered complete until GitHub Releases contains all three te
 3. Merge PR #1 only after analyzer, tests, Android Mobile, Android TV, and unsigned iOS build jobs are green.
 4. Then migrate Videasy as the next single provider with URL/transport/fallback tests.
 5. Continue unified navigation and Theeb Arab Search/Live/Turkish integration without removing Theeb Stream features.
+
+
+## Progress 2026-09-08 20:21 Asia/Riyadh
+- Re-inspected main, all branches, PR history, latest commits, CI runs, Releases, and the autonomous state document.
+- PR #1 is merged into `main` as squash commit `0df9bed229a607aff421f970bb33f3738fb85d60`.
+- PR #1 CI was fully green before merge: Analyze, Tests, Android Mobile APK, Android TV APK, and unsigned iOS IPA all succeeded from the same head commit.
+- GitHub Releases is still empty, so no published release is claimed yet.
+- Created `feat/videasy-provider` from current main for the next single-provider migration.
+- Added a temporary CI audit to inspect the preserved Theeb Arab source archive and confirmed the actual Videasy endpoint shapes from `lib/features/search/cinema_search_screen.dart`:
+  - movie: `https://player.videasy.net/movie/{id}?color=6C63FF`
+  - series: `https://player.videasy.net/tv/{id}/{s}/{e}?color=6C63FF`
+- Migrated Videasy as the second provider behind `PlaybackProviderRegistry`, preserving Pomfy as the first fallback candidate.
+- Added URL-generation and default fallback-order tests for Videasy.
+- Removed the temporary provider-audit step after extracting the source-backed endpoint definitions.
+- Bumped the integration version to `0.1.1+2` and Android TV versionCode/versionName to `2 / 0.1.1`.
+- Latest branch head: `80b44a0f23da1bae699acc16f7d7c46e8df1760b`.
+- CI for the updated provider branch is expected to rerun from this head; merge is blocked until the updated Analyze/Tests/platform builds are green.
+
+## Next run
+1. Inspect CI for `feat/videasy-provider` at head `80b44a0f23da1bae699acc16f7d7c46e8df1760b`; fix any failure on the same branch.
+2. Open/maintain a single PR for the Videasy migration and merge only after Analyze, Tests, Android Mobile, Android TV, and unsigned iOS jobs are green.
+3. After merge, verify the same `0.1.1+2` triplet on main and publish a GitHub Release only when all three assets are present from the same commit/version.
+4. Audit the next Theeb Arab provider from preserved source before adding it; do not guess endpoint formats.
+5. Begin unified navigation work for Turkish, Live, and unified Search while preserving Theeb Stream history, downloads, favorites/library, movies, and series.
