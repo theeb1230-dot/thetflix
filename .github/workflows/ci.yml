@@ -1,0 +1,130 @@
+name: thetflix integration CI
+
+on:
+  push:
+    branches: [main, "feat/**"]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: thetflix-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Analyze and test baseline
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Materialize source
+        run: bash tool/materialize_source.sh
+      - name: Dependencies
+        working-directory: .workspace/thetflix_app
+        run: flutter pub get
+      - name: Analyze
+        working-directory: .workspace/thetflix_app
+        run: flutter analyze --no-fatal-infos
+      - name: Tests
+        working-directory: .workspace/thetflix_app
+        run: flutter test
+
+  android-mobile:
+    name: Android Mobile APK
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - run: bash tool/materialize_source.sh
+      - working-directory: .workspace/thetflix_app
+        run: flutter pub get
+      - name: Build universal APK
+        working-directory: .workspace/thetflix_app
+        run: flutter build apk --release
+      - name: Rename
+        run: |
+          mkdir -p release
+          cp .workspace/thetflix_app/build/app/outputs/flutter-apk/app-release.apk release/thetflix-android-mobile.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: thetflix-android-mobile
+          path: release/thetflix-android-mobile.apk
+          retention-days: 7
+
+  android-tv:
+    name: Android TV APK
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - uses: android-actions/setup-android@v3
+      - run: bash tool/materialize_source.sh
+      - name: Configure Flutter SDK path
+        run: |
+          FLUTTER_PATH="$(which flutter | sed 's|/bin/flutter||')"
+          echo "flutter.sdk=$FLUTTER_PATH" > .workspace/thetflix_app/android/local.properties
+      - name: Build TV APK
+        working-directory: .workspace/thetflix_app/android
+        run: ./gradlew assembleFossUniversalRelease --no-daemon
+      - name: Rename
+        run: |
+          mkdir -p release
+          apk="$(find .workspace/thetflix_app/build/tvapp -maxdepth 6 -name '*.apk' -type f | head -n1)"
+          test -n "$apk"
+          cp "$apk" release/thetflix-android-tv.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: thetflix-android-tv
+          path: release/thetflix-android-tv.apk
+          retention-days: 7
+
+  ios:
+    name: iOS unsigned IPA
+    needs: validate
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: bash tool/materialize_source.sh
+      - working-directory: .workspace/thetflix_app
+        run: flutter pub get
+      - name: CocoaPods
+        working-directory: .workspace/thetflix_app/ios
+        run: pod install --repo-update
+      - name: Build without signing
+        working-directory: .workspace/thetflix_app
+        run: flutter build ios --release --no-codesign
+      - name: Package IPA
+        run: |
+          rm -rf Payload release
+          mkdir -p Payload release
+          cp -R .workspace/thetflix_app/build/ios/iphoneos/Runner.app Payload/
+          /usr/bin/zip -qry release/thetflix-ios-unsigned.ipa Payload
+      - uses: actions/upload-artifact@v4
+        with:
+          name: thetflix-ios-unsigned
+          path: release/thetflix-ios-unsigned.ipa
+          retention-days: 7
