@@ -63,4 +63,10 @@ if tv.exists():
     tv.write_text(t)
 PY
 
+# Apply checked-in integration overlay last. This keeps the original archives
+# immutable while new thetflix code becomes reviewable and testable.
+if [[ -d "$ROOT/overlays" ]]; then
+  cp -a "$ROOT/overlays"/. "$OUT"/
+fi
+
 echo "Materialized thetflix baseline at $OUT"
