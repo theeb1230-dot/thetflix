@@ -98,3 +98,20 @@ A release is not considered complete until GitHub Releases contains all three te
 3. After merge, verify the same `0.1.1+2` triplet on main and publish a GitHub Release only when all three assets are present from the same commit/version.
 4. Audit the next Theeb Arab provider from preserved source before adding it; do not guess endpoint formats.
 5. Begin unified navigation work for Turkish, Live, and unified Search while preserving Theeb Stream history, downloads, favorites/library, movies, and series.
+
+
+## Progress 2026-09-08 20:24 Asia/Riyadh
+- PR #2 is now open for the Videasy migration: `feat/videasy-provider` -> `main`.
+- Corrected an intermediate Android TV version-script bug before merge: the source match is now `versionCode = 15` and the materialized thetflix TV build is set to `versionCode = 2`, with `versionName = 0.1.1`.
+- Updated the manual release workflow default to `0.1.1`.
+- Current product version target for this PR remains `0.1.1+2`.
+- Latest PR head before this state update: `3646f44406762a4509b813826eea10025de67e9e`.
+- Latest PR CI run observed: `34256829770`; Analyze/Test job is currently in progress, so PR #2 remains intentionally unmerged.
+- GitHub Releases remains empty. No release publication is claimed yet.
+
+## Next run
+1. Inspect the newest PR #2 CI run after this documentation commit and fetch failing job logs if any.
+2. Keep all fixes on `feat/videasy-provider`; do not open another PR while #2 is open.
+3. Merge PR #2 only when Analyze, Tests, Android Mobile APK, Android TV APK, and unsigned iOS IPA are all green.
+4. After merge, verify main rebuilds the `0.1.1+2` triplet from the merge commit and publish Release `v0.1.1` only if all three assets are present.
+5. Then audit the next Theeb Arab provider from preserved source and begin unified Search/Turkish/Live navigation integration.
