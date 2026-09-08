@@ -34,7 +34,6 @@ import sys
 root = Path(sys.argv[1])
 p = root / "pubspec.yaml"
 text = p.read_text()
-text = text.replace("name: theeb_stream", "name: thetflix", 1)
 text = text.replace("description: ذيب ستريم - تطبيق Flutter وAndroid TV للمشاهدة والاستكشاف",
                     "description: thetflix - تطبيق موحد للمشاهدة والبث والبحث", 1)
 text = text.replace("version: 2.0.1+15", "version: 0.1.0+1", 1)
