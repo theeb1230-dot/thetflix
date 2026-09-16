@@ -21,6 +21,30 @@ void main() {
     );
   });
 
+  test('Videasy builds movie and series URLs', () {
+    expect(
+      videasyProvider.buildUrl(tmdbId: 550),
+      'https://player.videasy.net/movie/550?color=00F2FE',
+    );
+    expect(
+      videasyProvider.buildUrl(
+        tmdbId: 1399,
+        series: true,
+        season: 3,
+        episode: 4,
+      ),
+      'https://player.videasy.net/tv/1399/3/4?color=00F2FE',
+    );
+  });
+
+  test('default registry contains providers in configured fallback order', () {
+    final ids = createDefaultProviderRegistry()
+        .rankedCandidates()
+        .map((provider) => provider.id)
+        .toList();
+    expect(ids, ['pomfy', 'videasy']);
+  });
+
   test('healthy providers rank ahead of unknown providers', () {
     final registry = PlaybackProviderRegistry([
       pomfyProvider,
